@@ -79,6 +79,9 @@
 \newcommand{\range}[2]{#1,\ldots,#2}
 \newcommand{\partition}[3][]{\Set{#2<\ifthenelse{\equal{#1}{}}{}{#1<}\ldots<#3}}
 \newcommand*{\from}{\colon}
+\renewcommand{\mexists}[1]{\exists\mkern2mu #1}
+\renewcommand{\mforall}[1]{\forall\mkern2mu #1}
+\newcommand{\holds}{\mathrel{\colon}}
 
 % DDEs
 \newcommand{\Cnpw}[3][]{C_{\mkern-2mu\mathrm{pw}}^{#1}\ifthenelse{\equal{#2}{}}{}{\ifthenelse{\equal{#3}{}}{(#2)}{(#2,#3)}}}
@@ -117,6 +120,17 @@
 \DeclareSymbolFont{arrows1}{LS1}{stixsf}{m}{n}
 \DeclareMathDelimiter{\steps}{\mathrel}{arrows1}{"EC}{arrows1}{"EC}
 
+% states
+\newcommand{\states}{\mathcal{S}}
+\newcommand{\asstate}{\nu}
+
+% ddL
+\newcommand{\IddL}{\vdLint[
+    const=I, % interpretation
+    state=\nu, % state
+    assign=\past, % time parameter
+    access=\rho % reachability relation
+]}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
@@ -137,8 +151,8 @@
 \begin{frame}
     \frametitle{Time-delay Systems}
 
-    \begin{itemize}
-        \item \dL for hybrid (dynamical) systems with ODE
+    \begin{itemize}[<+->]
+        \item \dL for hybrid (dynamical) systems with ODEs
         \item CPS: connection between physical world and cyber part may be delayed
         \item introduce \emph{delay differential dynamic logic} (\ddL)
         \item a first-order modal logic for time-delay systems
@@ -148,7 +162,7 @@
 
 \begin{frame}
     \frametitle{Example}
-    This is a text in first frame. This is a text in first frame. This is a text in first frame.
+    TODO
 \end{frame}
 
 \begin{frame}
@@ -296,7 +310,7 @@
 
 \begin{frame}
     \frametitle[DDEs]{Delay Differential Equations}
-    \begin{definition}[DDE]
+    \begin{definition}[DDE]<1->
         For $\Set{\tau_j\in\R\with 0<\tau_1<\ldots<\tau_k}$
         and $f\from\deff\to\R^n$
         \begin{equation*}
@@ -305,7 +319,7 @@
         is a \emph{delay differential equation} with multiple constant delays. 
         Let $\taumax\defeq\tau_k$ \emph{maximal} and $\taumin\defeq\tau_1$ \emph{minimal delay}.
     \end{definition}
-    \begin{definition}[IVP]
+    \begin{definition}[IVP]<2->
         For an \emph{initial condition} $x_{\tzero}\from \compactum{\tzero-\taumax}{\tzero} \to\R^n$, solving
         \begin{equation*}
             \begin{cases}
@@ -422,10 +436,10 @@
             &\mid \astrm(s)\cdot\bstrm(s) \tag*{multiplication}\\
             &\mid \der{\astrm(s)} \tag*{differentials}
         \end{align*}
-        with $c\in\nonposQ$ constant parameter, $s$ past parameter,\\
+        with $a\in\Q$, $c\in\nonposQ$ constant parameter, $s$ past parameter,\\
         variable $x\in\allvars$, differential symbol $\D{x}\in\diffvars$.
     \end{definition}
-    If $\x[s]\notin\astrm(s)$ and $\Dx[s]\notin\astrm(s)$, write $\astrm$.
+    \visible<2->{If $\x[s]\notin\astrm(s)$ and $\Dx[s]\notin\astrm(s)$, write $\astrm$ and $x$ for $\x[0]$.}
 \end{frame}
 
 \begin{frame}
@@ -447,9 +461,9 @@
         \end{align*}
         with s-terms $\astrm(s),\bstrm(s)$. $T\geq 0$ is defined by static semantics.
     \end{definition}
-    The only way to \emph{bind} $s$ is by $\hs{}$.
-    Write $\asfml$ if $s$ is \emph{not free}.\\
-    $\asfml(\past)$ substitutes $s$ by $\past\in\nonposR$, even if in scope of $\hs{}$.
+    \visible<2->{The only way to \emph{bind} $s$ is by $\hs{}$.
+    Write $\asfml$ if $s$ is \emph{not free}.}\\
+    \visible<3->{$\asfml(\past)$ substitutes $s$ by $\past\in\nonposR$, even if in scope of $\hs{}$.}
 \end{frame}
 
 
@@ -457,13 +471,14 @@
 \begin{frame}
     \frametitle{Semantics}
     \begin{itemize}
-        \item state space $\statespace$
-        \item valuation depends on assignment $\past\in\closeddelayinterval$ to $s$
-        \item Example
+        \item<1-> state space $\statespace$
+        \item<2-> valuation depends on assignment $\past\in\closeddelayinterval$ to $s$
+        \item<3-> Example \begin{equation*}
+            \imodel{\IddL}{\hs{\asfml(s)}} = 
+            \Set*{\asstate\in\states \with \mforall{\tilde{r}\in [-T,0)}\holds\asstate\in\imodel{\iconcat[assign=\tilde{r}]{\IddL}}{\asfml(s)}}
+        \end{equation*}
+        with set of states $\states$.
     \end{itemize}
-    
-    
-    
 \end{frame}
 
 \begin{frame}\frametitle{Proof Calculus}
@@ -574,7 +589,7 @@
                 }
             }{}
     \end{equation*}
-    Test condition over entire state possible:
+    Test condition over entire state possible
     \begin{equation*}
             \cinferenceRule[testb|$\dibox{\htest{}}$]{test axiom}{
                 \linferenceRule[equiv]{
@@ -584,8 +599,6 @@
                 }
             }{}
     \end{equation*}
-
-
 \end{frame}
 
 \begin{frame}
@@ -612,7 +625,7 @@
         }{}
         % FIXME: linebreak in DC
         \cinferenceRule[DC|DC]{differential cut}{
-            \linferenceRule[lpmil]{
+            \linferenceRule[lpmi]{
                 \big(\dbox{\hevolvein{\D{x}=\astrm}{\ivr}}{\asfml(s)}
                 \lbisubjunct
                 \dbox{\hevolvein{\D{x}=\astrm}{\ivr\land\inv}}{\asfml(s)}\big)
@@ -639,30 +652,33 @@
 
 \begin{frame}
     \frametitle{Delay Differential Weakening}
-    \begin{equation*}
-        \hs{\asfml(s)}\land\asfml(0)\lbisubjunct\hsc{\asfml(s)}
-    \end{equation*}
-
-    \begin{calculus}
-        \cinferenceRule[DDW|DDW]{delay differential weakening}{
-            \linferenceRule[lpmil]{
-                \big(\bsfml\limply
-                \dbox{\hevolvein{\D{x}=\astrm}{\ivr}}{\hsc{\asfml(s)}}\big)
-            }{
-                \big((\bsfml\limply\hs{\asfml(s)})
-                \land
-                \lforall{x}{(\ivr\limply\asfml(0))}\big)\quad
-            }
-        }{}
-        % FIXME: space or linebreak for DDW condition
-    \end{calculus}
-
-    $\x[c]\notin\asfml(s)$
+    \begin{itemize}
+        \item<1-> Extend notation
+            \begin{equation*}
+                \hs{\asfml(s)}\land\asfml(0)\lbisubjunct\hsc{\asfml(s)}
+            \end{equation*}
+            to include $s=0$ into quantification over state domain.
+        \item<2-> \emph{delay differential weakening} axiom
+            \begin{equation*}
+                \cinferenceRule[DDW|DDW]{delay differential weakening}{
+                    \linferenceRule[lpmil]{
+                        \big(\bsfml\limply
+                        \dbox{\hevolvein{\D{x}=\astrm}{\ivr}}{\hsc{\asfml(s)}}\big)
+                    }{
+                        \big((\bsfml\limply\hs{\asfml(s)})
+                        \land
+                        \lforall{x}{(\ivr\limply\asfml(0))}\big)\quad
+                    }
+                }{}
+            \end{equation*}
+            where $\x[c]\notin\asfml(s)$ (only $\x[s]$ and $\Dx[s]$).
+        \item<3-> values in the state after a DDE were either specified in the initial condition or result from evolution
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Delay Differential Induction}
-    derived axiom
+    derived \emph{delay differential induction} axiom
     \footnotesize
     \begin{equation*}
         \cinferenceRule[DDI|DDI]{delay differential induction}{
@@ -686,40 +702,113 @@
             }
         }{}
     \end{equation*}\normalsize
-    $\x[c]\notin\asfml(s)$
-    \FOLR formula $\inv$
+    with $\x[c]\notin\asfml(s)$ (as for \irref{DDW}) and \FOLR formula $\inv$.
 \end{frame}
 
 \begin{frame}
     \frametitle{Axiom of Steps}
-    method of steps for DDEs
-    reduce DDE to ODE
+    \begin{itemize}
+        \item \emph{method of steps} for DDEs
+        \item reduce DDE to ODE by plugging in initial condition
+    \end{itemize}
     \begin{equation*} % no blank line before, causes to much space
         \cinferenceRule[stepsb|$\dibox{\steps}$]{method of steps axiom}{
             \linferenceRule[equivl]{
-                \dbox{\Dupdate{\Dumod{\D{x}}{\astrm}};\hrepeat{(\hupdate{\humod{t}{0}};\hevolvein{\D{t}=1\syssep \D{x}=\astrm}{\ivr\land 0\leq t\leq\taumin})}}{\asfml(s)}
+                \dbox{\htest{\ivr};\Dupdate{\Dumod{\D{x}}{\astrm}};\hrepeat{(\hupdate{\humod{t}{0}};\hevolvein{\D{t}=1\syssep \D{x}=\astrm}{\ivr\land 0\leq t\leq\taumin})}}{\asfml(s)}
             }{
                 \dbox{\hevolvein{\D{x}=\astrm}{\ivr}}{\asfml(s)}
             }
         }{}
     \end{equation*}
-
-
 \end{frame}
 
 \begin{frame}
     \frametitle{Example}
-    This is a text in first frame. This is a text in first frame. This is a text in first frame.
+    Prove $x(t)\geq 0$ for all $t\geq 0$:
+    \begin{equation*}
+        \begin{cases}
+            \D{x}(t) = x(t-\tau) & t \geq 0\\
+            x(t) \geq 0 & t \in [-\tau,0]
+        \end{cases}
+    \end{equation*}
+    for any $\tau>0$, using the invariant $\inv\equiv(x^3\geq 0)$
+\end{frame}
+
+% quantifier elimination for FOLR
+\newsavebox{\Rval}%
+\sbox{\Rval}{$\scriptstyle\R$}
+\irlabel{qear|\usebox{\Rval}}
+
+\begin{frame}
+    \frametitle{Example (Proof)}
+    \tiny
+    \begin{sequentdeduction}
+        \linfer[DC]{
+            \linfer[DI]{
+                \linfer[DDW]{
+                    \linfer[DE+G]{
+                        \linfer[assignb]{
+                            \linfer[qear]{
+                                \lclose
+                            }{
+                                (\hsc{\x[s]\geq 0}\limply x^3\geq 0 \land
+                                3x^2\x[-\tau]\geq 0 \land
+                                \hs{\x[s]\geq 0}) \land
+                                \lforall{x}{(x^3\geq 0 \limply x\geq 0)}
+                            }
+                        }{
+                            (\hsc{\x[s]\geq 0}
+                            \limply x^3\geq 0
+                            \land
+                            \dbox{\Dupdate{\Dumod{\D{x}}{\x[-\tau]}}}{(3x^2\D{x}\geq 0)}
+                            \land
+                            \hs{\x[s]\geq 0})
+                            \land
+                            \lforall{x}{(x^3\geq 0 \limply x\geq 0)}
+                        }
+                    }{
+                        (\hsc{\x[s]\geq 0}\limply x^3\geq 0
+                        \land
+                        \dbox{\hevolve{\D{x}=\x[-\tau]}}{(3x^2\D{x}\geq 0)}
+                        \land
+                        \hs{\x[s]\geq 0})
+                        \land
+                        \lforall{x}{(x^3\geq 0 \limply x\geq 0)}
+                    }
+                }{
+                    \hsc{\x[s]\geq 0}
+                    \limply
+                    x^3\geq 0
+                    \land
+                    \dbox{\hevolvein{\D{x}=\x[-\tau]}{x^3\geq 0}}{(\hsc{\x[s]\geq 0})}
+                    \land
+                    \dbox{\hevolve{\D{x}=\x[-\tau]}}{(3x^2\D{x}\geq 0)}
+                }
+            }{
+                \hsc{\x[s]\geq 0}
+                \limply
+                \dbox{\hevolvein{\D{x}=\x[-\tau]}{x^3\geq 0}}{(\hsc{\x[s]\geq 0})}
+                \land
+                \dbox{\hevolve{\D{x}=\x[-\tau]}}{(x^3\geq 0)}
+            }    
+        }{
+            \hsc{\x[s]\geq 0}
+            \limply
+            \dbox{\hevolve{\D{x}=\x[-\tau]}}{(\hsc{\x[s]\geq 0})}
+        }
+    \end{sequentdeduction}
+    \normalsize
+    The first three axioms correspond to the derived axiom~\irref{DDI}.
 \end{frame}
 
 \begin{frame}
     \frametitle{Outlook}
     \begin{itemize}
-        \item implementation in \KeYmaeraX
-        \item complete reduction to \dL via \irref{stepsb}-axiom
-        \item How to find differntial invariants?
-        \item Examples!
-        \item More general DDEs...
+        \item<1-> Examples!
+        \item<2-> How to find differntial invariants?
+        \item<3-> implementation in \KeYmaeraX
+        \item<4-> complete reduction to \dL via \irref{stepsb}-axiom
+        \item<5-> More general DDEs...
     \end{itemize}
 \end{frame}
 

@@ -542,9 +542,9 @@
   {\ifthenelse{\equal{#1}{equivl2}}{\begin{aligned}& #3\lbisubjunct\\[-2pt]&#2\end{aligned}\vspace{2pt}}
   {\ifthenelse{\equal{#1}{impl}}{#2\limply#3}
   {\ifthenelse{\equal{#1}{lpmi}}{#2\lylpmi#3}
-  % space before & inserted
+  % space before & inserted and multlined used
   {\ifthenelse{\equal{#1}{impll}}{\begin{aligned} & #2\\[-2pt]&\limply#3\end{aligned}\vspace{2pt}}
-  {\ifthenelse{\equal{#1}{lpmil}}{\begin{multlined}[t][\displaywidth] #2\\[-1em] \lylpmi#3\end{multlined}\vspace{1em}}
+  {\ifthenelse{\equal{#1}{lpmil}}{\begin{multlined}[t][0.8\textwidth] #2\\[0.5em] \lylpmi#3\end{multlined}}
     {\ifthenelse{\equal{#1}{term}}{\rewrite{#2}{#3}}
       {\ifthenelse{\equal{#1}{eq}}{#3\,=\,#2}
         {\ifthenelse{\equal{#1}{sub}\or\equal{#1}{leq}}{#3\,\leq\,#2}
