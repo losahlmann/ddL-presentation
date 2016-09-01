@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass[handout]{beamer}
 
 % encoding of tex-file
 \usepackage[utf8]{inputenc}
@@ -161,170 +161,126 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Example}
-    TODO
+    \frametitle{Example: stop sign controller}
+    \begin{columns}
+        \begin{column}[T]{0.6\textwidth}
+        \begin{itemize}
+            \item discrete controller for reference position $p_r$
+            \item PD-controller for acceleration
+                \begin{equation*}
+                    \begin{cases}
+                        \D{x} = v &\\
+                        \D{v} = -K_p(x-p_r)-K_d\,v &
+                    \end{cases}
+                \end{equation*}
+            \item delay in sensing
+                \begin{equation*}\small
+                    \begin{cases}
+                        \D{x} = v &\\
+                        \D{v} = -K_p\big(x(t-\tau)-p_r\big)-K_d\,v(t-\tau) &
+                    \end{cases}
+                \end{equation*}
+            \item oscillations
+        \end{itemize}
+        \end{column}
+        \begin{column}[T]{0.4\textwidth}
+            \noindent\begin{tikzpicture}
+            \node [inner sep=0cm, below right] at (0,0)  {
+            \includegraphics[width=1.1\textwidth]{tau0-3.png}};
+            \node at (3,-1.1) {$x$};
+            \node at (3,-6.1) {$v$};
+            \node at (3,-3.3) {$\tau=0.3$};
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Piecewise}
-    \begin{tikzpicture}[line width=0.5pt, xscale=\textwidth/4.4cm, yscale=0.8\textheight/7.4cm, >=Latex]
-
-        \newcommand{\polytwo}{\ca+\cb*((\x-\ta)/(\tb-\ta))+\cc*((\x-\ta)/(\tb-\ta))^2}
-        \newcommand{\polythree}{\ca+\cb*((\x-\ta)/(\tb-\ta))+\cc*((\x-\ta)/(\tb-\ta))^2+\cd*((\x-\ta)/(\tb-\ta))^3}
-        \newcommand{\polyfour}{\ca+\cb*((\x-\ta)/(\tb-\ta))+\cc*((\x-\ta)/(\tb-\ta))^2+\cd*((\x-\ta)/(\tb-\ta))^3+\ce*((\x-\ta)/(\tb-\ta))^4}
-
-        % grid
-        %\draw[help lines, color=gray!30, dashed] (-4,-3) grid (4,4);
-        
-        % frame
-        \draw (-4.2,-3.2) rectangle (0.2,4.2);
-
-
-        % grid and ticks
-        \foreach \y in {-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0,4.0} {
-            \draw[help lines, color=gray!30, dashed] (-4.2,\y) -- (0.2,\y);
-            \draw[thick] (-4.2,\y) -- (-4.12,\y);
-            \draw[thick] (0.2,\y) -- (0.12,\y);
-        }
-        \foreach \x in {-4.0,-3.25,-2.0,-1.2,0.0} {
-            \draw[help lines, color=gray!30, dashed] (\x,-3.2) -- (\x,4.2);
-            \draw[thick] (\x,4.2) -- (\x,4.0);
-            \draw[thick] (\x,-3.2) -- (\x,-3.0);
-        }
-        % \foreach \x in {0.25,0.6,0.75,1.5,1.8,2.0,2.3,2.55,2.8,3.5,3.8,4.0} {
-        %     \draw[help lines, color=gray!30, dashed] (\x,-3.2) -- (\x,4.2);
-        %     \draw[thick] (\x,4.2) -- (\x,4.08);
-        %     \draw[thick] (\x,-3.2) -- (\x,-3.08);
-        % }
-
-
-        \draw (-4.0,4.1)  node[below] {$t_0$};
-        \draw (-3.25,4.1)  node[below] {$t_1$};
-        \draw (-2.0,4.1)   node[below] {$t_2$};
-        \draw (-1.2,4.1)   node[below] {$t_3$};
-        \draw (0.0,4.1)    node[below] {$t_4$};
-        % \draw (0.0,-3.1)   node[above] {$\hat t_0$};
-        % \draw (0.75,-3.1)  node[above] {$\hat t_1$};
-        % \draw (2.0,-3.1)   node[above] {$\hat t_2$};
-        % \draw (2.8,-3.1)   node[above] {$\hat t_3$};
-        % \draw (3.93,-3.1)   node[above] {$\hat t_p$};
-        
-        % \draw (-4,-0.3) node[below] {$-T$};
-        \draw (-4.1,0.0) node[right] {$0$};
-        
-
-        % initial condition
-        \draw (-3.5,1.1) node[above] {$x$};
-        \draw (-3.5,-1.5) node[above] {$\D{x}$};
-
-        % on [-4,-3.25]
-        \newcommand{\ta}{-4}
-        \newcommand{\tb}{-3.25}
-        \newcommand{\ca}{1.3}
-        \newcommand{\cb}{1.7}
-        \newcommand{\cc}{-5.3}
-        \newcommand{\cd}{2.8}
-        \draw[curve,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polythree});
-
-
-        % on [-3.25,-2]
-        \renewcommand{\ta}{-3.25}
-        \renewcommand{\tb}{-2.0}
-        \renewcommand{\ca}{-0.2}
-        \renewcommand{\cb}{-1.125}
-        \renewcommand{\cc}{4.35}
-        \renewcommand{\cd}{-2.125}
-        \draw[curve,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polythree});
-
-        
-        % on [-2,-1.2]
-        \renewcommand{\ta}{-2.0}
-        \renewcommand{\tb}{-1.2}
-        \renewcommand{\ca}{0.4}
-        \renewcommand{\cb}{-0.24}
-        \renewcommand{\cc}{-0.32}
-        \renewcommand{\cd}{0.96}
-        \draw[curve,leftp] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polythree});
-        
-        % on [-1.2,0]
-        \renewcommand{\ta}{-1.2}
-        \renewcommand{\tb}{0.0}
-        \renewcommand{\ca}{0.8}
-        \renewcommand{\cb}{0.2}
-        \renewcommand{\cc}{-4.72}
-        \renewcommand{\cd}{2.92}
-        \draw[curve,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polythree});
-
-        % derivative of initial condition
-
-        % on [-4.0,-3.25]
-        \renewcommand{\ta}{-4.0}
-        \renewcommand{\tb}{-3.25}
-        \renewcommand{\ca}{1.7}
-        \renewcommand{\cb}{-10.6}
-        \renewcommand{\cc}{8.4}
-        \draw[deriv,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polytwo});
-
-        % on [-3.25,-2]
-        \renewcommand{\ta}{-3.25}
-        \renewcommand{\tb}{-2.0}
-        \renewcommand{\ca}{-1.125}
-        \renewcommand{\cb}{8.7}
-        \renewcommand{\cc}{-6.375}
-        \draw[deriv,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polytwo});
-
-        % on [-2,-1.2]
-        \renewcommand{\ta}{-2.0}
-        \renewcommand{\tb}{-1.2}
-        \renewcommand{\ca}{-0.24}
-        \renewcommand{\cb}{-0.64}
-        \renewcommand{\cc}{2.88}
-        \draw[deriv,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polytwo});
-
-        % on [-1.2,0]
-        \renewcommand{\ta}{-1.2}
-        \renewcommand{\tb}{0.0}
-        \renewcommand{\ca}{0.2}
-        \renewcommand{\cb}{-9.44}
-        \renewcommand{\cc}{8.76}
-        \draw[deriv,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polytwo});
-    \end{tikzpicture}
+    \frametitle{Example: stop sign controller}
+    \begin{columns}
+        \begin{column}[T]{0.6\textwidth}
+        \begin{itemize}
+            \item discrete controller for reference position $p_r$
+            \item PD-controller for acceleration
+                \begin{equation*}
+                    \begin{cases}
+                        \D{x} = v &\\
+                        \D{v} = -K_p(x-p_r)-K_d\,v &
+                    \end{cases}
+                \end{equation*}
+            \item delay in sensing
+                \begin{equation*}\small
+                    \begin{cases}
+                        \D{x} = v &\\
+                        \D{v} = -K_p\big(x(t-\tau)-p_r\big)-K_d\,v(t-\tau) &
+                    \end{cases}
+                \end{equation*}
+            \item oszillations
+        \end{itemize}
+        \end{column}
+        \begin{column}[T]{0.4\textwidth}
+            \noindent\begin{tikzpicture}
+            \node [inner sep=0cm, below right] at (0,0)  {
+            \includegraphics[width=1.1\textwidth]{tau0-4.png}};
+            \node at (3,-1.1) {$x$};
+            \node at (3,-6.1) {$v$};
+            \node at (3,-3.3) {$\tau=0.4$};
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Piecewise}
-    \begin{definition}[Piecewise Continuously Differentiable]
-    Given a finite partition $\partition[t_1]{a=t_0}{t_p=b}$ of $\compactum{a}{b}$,
-    \begin{equation*}
-        x\from \compactum{a}{b}\to\R^n
-    \end{equation*}
-    is $m$-times \emph{piecewise continuously differentiable} iff
-    \begin{enumerate}
-        \item $x$ is $m$-times continuously differentiable on each $(t_i,t_{i+1})$
-        \item $\displaystyle\lim_{\substack{t\upto t_{i+1}\\ t\in(t_i,t_{i+1})}} \D[k]{x}(t)$ exist
-        \item $\displaystyle\lim_{\substack{t\downto t_{i}\\ t\in(t_i,t_{i+1})}} \D[k]{x}(t) = \D[k]{x}(t_i)$
-    \end{enumerate}
-    for all $k=\range{0}{m}$.      
-    \end{definition}
+    \frametitle{Example: stop sign controller}
+    \begin{columns}
+        \begin{column}[T]{0.6\textwidth}
+        \begin{itemize}
+            \item discrete controller for reference position $p_r$
+            \item PD-controller for acceleration
+                \begin{equation*}
+                    \begin{cases}
+                        \D{x} = v &\\
+                        \D{v} = -K_p(x-p_r)-K_d\,v &
+                    \end{cases}
+                \end{equation*}
+            \item delay in sensing
+                \begin{equation*}\small
+                    \begin{cases}
+                        \D{x} = v &\\
+                        \D{v} = -K_p\big(x(t-\tau)-p_r\big)-K_d\,v(t-\tau) &
+                    \end{cases}
+                \end{equation*}
+            \item oszillations
+        \end{itemize}
+        \end{column}
+        \begin{column}[T]{0.4\textwidth}
+            \noindent\begin{tikzpicture}
+            \node [inner sep=0cm, below right] at (0,0)  {
+            \includegraphics[width=1.1\textwidth]{tau0-5.png}};
+            \node at (3,-1.1) {$x$};
+            \node at (3,-4.6) {$v$};
+            \node at (3,-3.3) {$\tau=0.5$};
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}
     \frametitle[DDEs]{Delay Differential Equations}
     \begin{definition}[DDE]<1->
-        For $\Set{\tau_j\in\R\with 0<\tau_1<\ldots<\tau_k}$
-        and $f\from\deff\to\R^n$
+        For delay $\tau>0$ and $f\from\R^n\times\R^n\to\R^n$,
         \begin{equation*}
-            \D{x}(t) = f(t,x(t),x(t-\tau_1),\ldots,x(t-\tau_k))
+            \D{x}(t) = f(x(t),x(t-\tau))
         \end{equation*}
-        is a \emph{delay differential equation} with multiple constant delays. 
-        Let $\taumax\defeq\tau_k$ \emph{maximal} and $\taumin\defeq\tau_1$ \emph{minimal delay}.
+        is a \emph{delay differential equation} with constant delay.\\
+        Can be extended to multiple delays.
     \end{definition}
     \begin{definition}[IVP]<2->
-        For an \emph{initial condition} $x_{\tzero}\from \compactum{\tzero-\taumax}{\tzero} \to\R^n$, solving
+        For an \emph{initial condition} $x_{\tzero}\from \compactum{\tzero-\tau}{\tzero} \to\R^n$, solving
         \begin{equation*}
             \begin{cases}
-                \D{x}(t) = f(t,x(t),x(t-\tau_1),\ldots,x(t-\tau_k)) & \text{for } t\geq\tzero\\
-                x(t) = x_{\tzero}(t) & \text{for } t\in\compactum{\tzero-\taumax}{\tzero}
+                \D{x}(t) = f(x(t),x(t-\tau)) & \text{for } t\geq\tzero\\
+                x(t) = x_{\tzero}(t) & \text{for } t\in\compactum{\tzero-\tau}{\tzero}
             \end{cases}
         \end{equation*}
         is the \emph{initial value problem}.
@@ -346,31 +302,35 @@
         \draw (-1.2,-1.2) rectangle (7.2,1.2);
 
         % grid and ticks
-        \foreach \y in {-1.0,-0.5,0.5,1.0} {
-            \draw[help lines, color=gray!30, dashed] (-1.2,\y) -- (7.2,\y);
+        \foreach \y in {-1.0,-0.5,0.0,0.5,1.0} {
+            \draw[help lines, dashed] (-1.2,\y) -- (7.2,\y);
             \draw[thick] (-1.2,\y) -- (-1.08,\y);
             \draw[thick] (7.2,\y) -- (7.08,\y);
         }
 
-        \foreach \x in {-1,1,...,7} {
-            \draw[help lines, color=gray!30, dashed] (\x,-1.2) -- (\x,1.2);
+        \foreach \x in {-1,...,7} {
+            \draw[help lines, dashed] (\x,-1.2) -- (\x,1.2);
             \draw[thick] (\x,1.2) -- (\x,1.08);
             \draw[thick] (\x,-1.2) -- (\x,-1.08);
             \draw (\x,-1.2) node[below] {$\x$};
         }
 
-        \draw[dashed] (-1.2,0) -- (7.2,0);
-        \draw[thick] (-1.2,0) -- (-1.08,0);
-        \draw[thick] (7.2,0) -- (7.08,0);
+        % \draw[dashed] (-1.2,0) -- (7.2,0);
+        % \draw[thick] (-1.2,0) -- (-1.08,0);
+        % \draw[thick] (7.2,0) -- (7.08,0);
         \draw (-1.2,1.0) node[left] {$1$};
         \draw (-1.2,0.0) node[left] {$0$};
         \draw (-1.2,-1.0) node[left] {$-1$};
         % \draw (-1.5,0)--(-1.5,-1);
 
-        \draw[dashed] (0,-1.2) -- (0,1.0);
-        \draw[thick] (0,1.2) -- (0,1.08);
-        \draw[thick] (0,-1.2) -- (0,-1.08);
+        % \draw[dashed] (0,-1.2) -- (0,1.0);
+        % \draw[thick] (0,1.2) -- (0,1.08);
+        % \draw[thick] (0,-1.2) -- (0,-1.08);
         \draw (0,-1.2) node[below] {$0$};
+
+        % delay arrow
+        \path[->,color=darkbleu303] (-0.5,0.95) edge [bend right] (0.45,0.5);
+        \path[->,color=darkbleu303] (2.5,-0.35) edge [bend left] (3.45,0.1);
 
         % initial condition
         \draw[thick,leftp] (-1,1) -- (0,1);
@@ -392,14 +352,190 @@
     \end{tikzpicture}
 \end{frame}
 
+\begin{frame}
+    \frametitle{Piecewise}
+    \begin{columns}[T]
+        \begin{column}[T]{0.3\textwidth}
+            \begin{tikzpicture}[line width=0.5pt, xscale=\textwidth/2.4cm, yscale=0.9\textheight/7.4cm, >=Latex]
+
+                \newcommand{\polytwo}{\ca+\cb*((\x-\ta)/(\tb-\ta))+\cc*((\x-\ta)/(\tb-\ta))^2}
+                \newcommand{\polythree}{\ca+\cb*((\x-\ta)/(\tb-\ta))+\cc*((\x-\ta)/(\tb-\ta))^2+\cd*((\x-\ta)/(\tb-\ta))^3}
+                \newcommand{\polyfour}{\ca+\cb*((\x-\ta)/(\tb-\ta))+\cc*((\x-\ta)/(\tb-\ta))^2+\cd*((\x-\ta)/(\tb-\ta))^3+\ce*((\x-\ta)/(\tb-\ta))^4}
+
+                % grid
+                %\draw[help lines, color=gray!30, dashed] (-4,-3) grid (4,4);
+                
+                % frame
+                \draw (-4.2,-3.2) rectangle (-1.8,4.2);
+
+
+                % grid and ticks
+                \foreach \y in {-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0,4.0} {
+                    \draw[help lines, color=gray!30, dashed] (-4.2,\y) -- (-1.8,\y);
+                    \draw[thick] (-4.2,\y) -- (-4.12,\y);
+                    \draw[thick] (-1.8,\y) -- (-1.88,\y);
+                }
+                \foreach \x in {-4.0,-3.25,-2.0} {
+                    \draw[help lines, color=gray!30, dashed] (\x,-3.2) -- (\x,4.2);
+                    \draw[thick] (\x,4.2) -- (\x,4.0);
+                    \draw[thick] (\x,-3.2) -- (\x,-3.0);
+                }
+                % \foreach \x in {0.25,0.6,0.75,1.5,1.8,2.0,2.3,2.55,2.8,3.5,3.8,4.0} {
+                %     \draw[help lines, color=gray!30, dashed] (\x,-3.2) -- (\x,4.2);
+                %     \draw[thick] (\x,4.2) -- (\x,4.08);
+                %     \draw[thick] (\x,-3.2) -- (\x,-3.08);
+                % }
+
+
+                \draw (-4.0,4.1)  node[below] {$t_0$};
+                \draw (-3.25,4.1)  node[below] {$t_1$};
+                \draw (-2.0,4.1)   node[below] {$t_2$};
+                % \draw (-1.2,4.1)   node[below] {$t_3$};
+                % \draw (0.0,4.1)    node[below] {$t_4$};
+                % \draw (0.0,-3.1)   node[above] {$\hat t_0$};
+                % \draw (0.75,-3.1)  node[above] {$\hat t_1$};
+                % \draw (2.0,-3.1)   node[above] {$\hat t_2$};
+                % \draw (2.8,-3.1)   node[above] {$\hat t_3$};
+                % \draw (3.93,-3.1)   node[above] {$\hat t_p$};
+                
+                % \draw (-4,-0.3) node[below] {$-T$};
+                \draw (-4.18,0.0) node[right] {$0$};
+                
+
+                % initial condition
+                \draw (-3.5,1.1) node[above] {$x$};
+                \draw (-3.5,-1.5) node[below] {$\D{x}$};
+
+                % on [-4,-3.25]
+                \newcommand{\ta}{-4}
+                \newcommand{\tb}{-3.25}
+                \newcommand{\ca}{1.3}
+                \newcommand{\cb}{1.7}
+                \newcommand{\cc}{-5.3}
+                \newcommand{\cd}{2.8}
+                \draw[curve,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polythree});
+
+
+                % on [-3.25,-2]
+                \renewcommand{\ta}{-3.25}
+                \renewcommand{\tb}{-2.0}
+                \renewcommand{\ca}{-0.2}
+                \renewcommand{\cb}{-1.125}
+                \renewcommand{\cc}{4.35}
+                \renewcommand{\cd}{-2.125}
+                \draw[curve,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polythree});
+
+                
+                % % on [-2,-1.2]
+                % \renewcommand{\ta}{-2.0}
+                % \renewcommand{\tb}{-1.2}
+                % \renewcommand{\ca}{0.4}
+                % \renewcommand{\cb}{-0.24}
+                % \renewcommand{\cc}{-0.32}
+                % \renewcommand{\cd}{0.96}
+                % \draw[curve,leftp] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polythree});
+                
+                % % on [-1.2,0]
+                % \renewcommand{\ta}{-1.2}
+                % \renewcommand{\tb}{0.0}
+                % \renewcommand{\ca}{0.8}
+                % \renewcommand{\cb}{0.2}
+                % \renewcommand{\cc}{-4.72}
+                % \renewcommand{\cd}{2.92}
+                % \draw[curve,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polythree});
+
+                % derivative of initial condition
+
+                % on [-4.0,-3.25]
+                \renewcommand{\ta}{-4.0}
+                \renewcommand{\tb}{-3.25}
+                \renewcommand{\ca}{1.7}
+                \renewcommand{\cb}{-10.6}
+                \renewcommand{\cc}{8.4}
+                \draw[deriv,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polytwo});
+
+                % on [-3.25,-2]
+                \renewcommand{\ta}{-3.25}
+                \renewcommand{\tb}{-2.0}
+                \renewcommand{\ca}{-1.125}
+                \renewcommand{\cb}{8.7}
+                \renewcommand{\cc}{-6.375}
+                \draw[deriv,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polytwo});
+
+                % % on [-2,-1.2]
+                % \renewcommand{\ta}{-2.0}
+                % \renewcommand{\tb}{-1.2}
+                % \renewcommand{\ca}{-0.24}
+                % \renewcommand{\cb}{-0.64}
+                % \renewcommand{\cc}{2.88}
+                % \draw[deriv,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polytwo});
+
+                % % on [-1.2,0]
+                % \renewcommand{\ta}{-1.2}
+                % \renewcommand{\tb}{0.0}
+                % \renewcommand{\ca}{0.2}
+                % \renewcommand{\cb}{-9.44}
+                % \renewcommand{\cc}{8.76}
+                % \draw[deriv,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polytwo});
+            \end{tikzpicture}
+        \end{column}
+        \begin{column}[T]{0.7\textwidth}
+            \begin{definition}[Piecewise Cont. Differentiable]
+            For a partition $\partition[t_1]{a=t_0}{t_p=b}$,
+            \begin{equation*}
+                x\from \compactum{a}{b}\to\R^n
+            \end{equation*}
+            is $m$-times \emph{piecewise continuously differentiable} iff for all $k=\range{0}{m}$:
+            \begin{enumerate}
+                \item $x$ is $m$-times continuously differentiable on each $(t_i,t_{i+1})$
+                \item $\displaystyle\lim_{\substack{t\upto t_{i+1}\\ t\in(t_i,t_{i+1})}} \D[k]{x}(t)$ exist
+                \item $\displaystyle\lim_{\substack{t\downto t_{i}\\ t\in(t_i,t_{i+1})}} \D[k]{x}(t) = \D[k]{x}(t_i)$
+            \end{enumerate}
+                 
+            \end{definition}
+        \end{column}
+    \end{columns}
+    
+\end{frame}
+
+
+
 % FIXME: make emph in theorem bold
 \begin{frame}
     \frametitle{Solutions}
     \begin{theorem}[Existence of a unique solution]
-        Let $f\from\deff\to\R^n$ continuous and Lipschitz in its first argument and $x_{\tzero}$ \emph{piecewise continuous},\\
-        then there \emph{exists} a \emph{unique local solution} of the IVP on a time interval $\compactum{\tzero-\taumax}{\tzero+T}$.
+        Let $f\from\R^n\times\R^n\to\R^n$ continuous and Lipschitz in its first argument and $x_{\tzero}$ \emph{piecewise continuous},\\
+        then there \emph{exists} a \emph{unique local solution} of the IVP on a time interval $\compactum{\tzero-\tau}{\tzero+T}$.
     \end{theorem}
     
+\end{frame}
+
+\begin{frame}
+    \tikzstyle{every picture}+=[remember picture]
+    \tikzstyle{na} = [baseline=-1.75ex]
+    \tikzstyle{nb} = [baseline=0.6ex]
+    \tikzstyle{nc} = [baseline=-0.5ex]
+    \frametitle{Towards Logics}
+    Example DDE: show $x(t)\leq 1$ for all $t\geq 0$ \tikz[nc]{\node [coordinate] (n3) {};}
+    \begin{equation*}
+        \begin{cases}
+            \D{x}(t) = -x(t-1) \tikz[nb]{ \node [coordinate] (n1) {};}
+                & t\geq 0\\
+            x(t) = 1 \tikz[nb]{\node [coordinate] (n2) {};}
+                & t\in\compactum{-1}{0}
+        \end{cases}
+    \end{equation*}
+    Notation in \ddL
+    \begin{equation*}
+        \hsc[-1]{\tikz[na]\node [coordinate] (t2) {}; \x[s]=1}
+        \limply \dbox{\hevolve{\D{x}=\tikz[na]{\node [coordinate] (t1) {};}\x[-1]}}{(x\leq 1)}\tikz[nc]{\node [coordinate] (t3) {};}
+    \end{equation*}
+
+    \begin{tikzpicture}[overlay]
+        \path[->,color=darkbleu303] (n1) edge [out=-90, in=120] (t1);
+        \path[->,color=darkbleu303] (n2) edge [out=-90, in=90] (t2);
+        \path[->,color=darkbleu303] (n3) edge [out=0, in=0] (t3);
+    \end{tikzpicture}
 \end{frame}
 
 \begin{frame}
@@ -439,7 +575,7 @@
         with $a\in\Q$, $c\in\nonposQ$ constant parameter, $s$ past parameter,\\
         variable $x\in\allvars$, differential symbol $\D{x}\in\diffvars$.
     \end{definition}
-    \visible<2->{If $\x[s]\notin\astrm(s)$ and $\Dx[s]\notin\astrm(s)$, write $\astrm$ and $x$ for $\x[0]$.}
+    % \visible<2->{If $\x[s]\notin\astrm(s)$ and $\Dx[s]\notin\astrm(s)$, write $\astrm$ and $x$ for $\x[0]$.}
 \end{frame}
 
 \begin{frame}
@@ -463,17 +599,144 @@
     \end{definition}
     \visible<2->{The only way to \emph{bind} $s$ is by $\hs{}$.
     Write $\asfml$ if $s$ is \emph{not free}.}\\
-    \visible<3->{$\asfml(\past)$ substitutes $s$ by $\past\in\nonposR$, even if in scope of $\hs{}$.}
+    % \visible<3->{$\asfml(\past)$ substitutes $s$ by $\past\in\nonposR$, even if in scope of $\hs{}$.}
 \end{frame}
 
+\begin{frame}
+    \frametitle{Semantics}
+    \begin{tikzpicture}[font=\footnotesize,line width=0.5pt, xscale=\textwidth/8.4cm, yscale=0.5\textheight/7.4cm, >=Latex]
 
+        \newcommand{\polytwo}{\ca+\cb*((\x-\ta)/(\tb-\ta))+\cc*((\x-\ta)/(\tb-\ta))^2}
+        \newcommand{\polythree}{\ca+\cb*((\x-\ta)/(\tb-\ta))+\cc*((\x-\ta)/(\tb-\ta))^2+\cd*((\x-\ta)/(\tb-\ta))^3}
+        \newcommand{\polyfour}{\ca+\cb*((\x-\ta)/(\tb-\ta))+\cc*((\x-\ta)/(\tb-\ta))^2+\cd*((\x-\ta)/(\tb-\ta))^3+\ce*((\x-\ta)/(\tb-\ta))^4}
+
+        % grid
+        %\draw[help lines, color=gray!30, dashed] (-4,-3) grid (4,4);
+        
+        % sliding window
+        \draw[dashed,color=vert575,fill=ultralightvert575] (-4,-2.4) rectangle (0,3.4);
+        \draw[dashed,color=bleu303,fill=bleu303,fill opacity=0.2] (-2,-2.4) rectangle (2,3.4);
+
+        \draw[|-|] (-4,-2.8) -- (0,-2.8) node [midway, below] {state at $t=0$};
+        \draw[|-|] (-2,3.8) -- (2,3.8) node [midway, above] {state at $t=\zeta$};
+
+        % frame
+        \draw (-4.2,-2.4) rectangle (4.2,3.4);
+
+        % grid and ticks
+        \foreach \y in {-2.0,-1.0,0.0,1.0,2.0,3.0} {
+            % \draw[help lines, dashed] (-4.2,\y) -- (4.2,\y);
+            \draw[thick] (-4.2,\y) -- (-4.15,\y);
+            \draw[thick] (4.2,\y) -- (4.15,\y);
+        }
+        \foreach \x in {-4.0,-3.25,-2.0,-1.2,0.0,1.0,2.0,3.0,4.0} {
+            % \draw[help lines, dashed] (\x,-3.2) -- (\x,4.2);
+            \draw[thick] (\x,3.4) -- (\x,3.2);
+            \draw[thick] (\x,-2.4) -- (\x,-2.2);
+        }
+
+        \draw (-4.0,-2.2)   node[above] {$-\tau$};
+        \draw (0,-2.2)  node[above] {$0$};
+        \draw (2.0,-2.2)   node[above] {$\zeta$};
+        \draw (-2,-2.2)   node[above] {$\zeta-\tau$};
+
+        \draw (2.57,0.8) node {$\D{x}=-x(t-\tau)$};
+        
+
+        % initial condition
+
+        % on [-4,-3.25]
+        \newcommand{\ta}{-4}
+        \newcommand{\tb}{-3.25}
+        \newcommand{\ca}{1.3}
+        \newcommand{\cb}{1.7}
+        \newcommand{\cc}{-5.3}
+        \newcommand{\cd}{2.8}
+        \draw[curve,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polythree});
+
+        % on [-3.25,-2]
+        \renewcommand{\ta}{-3.25}
+        \renewcommand{\tb}{-2.0}
+        \renewcommand{\ca}{-0.2}
+        \renewcommand{\cb}{-1.125}
+        \renewcommand{\cc}{4.35}
+        \renewcommand{\cd}{-2.125}
+        \draw[curve,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polythree});
+        
+        % on [-2,-1.2]
+        \renewcommand{\ta}{-2.0}
+        \renewcommand{\tb}{-1.2}
+        \renewcommand{\ca}{0.4}
+        \renewcommand{\cb}{-0.24}
+        \renewcommand{\cc}{-0.32}
+        \renewcommand{\cd}{0.96}
+        \draw[curve,leftp] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polythree});
+        
+        % on [-1.2,0]
+        \renewcommand{\ta}{-1.2}
+        \renewcommand{\tb}{0.0}
+        \renewcommand{\ca}{0.8}
+        \renewcommand{\cb}{0.2}
+        \renewcommand{\cc}{-4.72}
+        \renewcommand{\cd}{2.92}
+        \draw[curve,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polythree});
+
+
+        % solution of x'=-x(t-4)
+
+        % on [0,0.75]
+        \renewcommand{\ta}{0.0}
+        \renewcommand{\tb}{0.75}
+        \renewcommand{\ca}{1.5}
+        \renewcommand{\cb}{-1.3}
+        \renewcommand{\cc}{-0.85}
+        \renewcommand{\cd}{1.7666666666666}
+        \newcommand{\ce}{-0.7}
+        \draw[curve,leftp] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polyfour});
+
+        % on [0.75,2.0]
+        \renewcommand{\ta}{0.75}
+        \renewcommand{\tb}{2.0}
+        \renewcommand{\ca}{0.4166666666666}
+        \renewcommand{\cb}{0.2}
+        \renewcommand{\cc}{0.5625}
+        \renewcommand{\cd}{-1.45}
+        \renewcommand{\ce}{0.53125}
+        \draw[curve] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polyfour});
+
+        % on [2.0,2.8]
+        \renewcommand{\ta}{2.0}
+        \renewcommand{\tb}{2.8}
+        \renewcommand{\ca}{0.2604166666666}
+        \renewcommand{\cb}{-0.4}
+        \renewcommand{\cc}{0.12}
+        \renewcommand{\cd}{0.106666666666666}
+        \renewcommand{\ce}{-0.24}
+        \draw[curve] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polyfour});
+
+        % on [2.8,4]
+        \renewcommand{\ta}{2.8}
+        \renewcommand{\tb}{4.0}
+        \renewcommand{\ca}{-0.152916666666}
+        \renewcommand{\cb}{-0.8}
+        \renewcommand{\cc}{-0.1}
+        \renewcommand{\cd}{1.573333333333333}
+        \renewcommand{\ce}{-0.73}
+        \draw[curve] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polyfour});
+
+    \end{tikzpicture}
+    \begin{itemize}
+        \item state space $\statespace$
+    \end{itemize}
+  
+\end{frame}
 
 \begin{frame}
     \frametitle{Semantics}
     \begin{itemize}
-        \item<1-> state space $\statespace$
-        \item<2-> valuation depends on assignment $\past\in\closeddelayinterval$ to $s$
-        \item<3-> Example \begin{equation*}
+        \item valuation of s-terms and s-formulas
+        \item depends on assignment $\past\in\closeddelayinterval$ to $s$
+        \item Example \begin{equation*}
             \imodel{\IddL}{\hs{\asfml(s)}} = 
             \Set*{\asstate\in\states \with \mforall{\tilde{r}\in [-T,0)}\holds\asstate\in\imodel{\iconcat[assign=\tilde{r}]{\IddL}}{\asfml(s)}}
         \end{equation*}
@@ -513,7 +776,7 @@
 \renewcommand*{\irrulename}[1]{\text{#1}}
 
 \begin{frame}
-    \frametitle{Axiomatization}
+    \frametitle{Proof Calculus}
         % axioms
     \begin{calculus}
         \cinferenceRule[diamond|$\didia{\cdot}$]{diamond axiom}{
@@ -578,31 +841,67 @@
 
 
 \begin{frame}
-    \frametitle{Axiomatization}
-    Assignment only changes present value, not past!
-    \begin{equation*}
-        \cinferenceRule[assignb|$\dibox{\assign}$]{assignment/substitution axiom}{
-                \linferenceRule[equiv]{
-                    \asfml(s,\astrm)
-                }{
-                    \dbox{\hupdate{\humod{x}{\astrm}}}{\asfml(s,\x[0])}
-                }
-            }{}
-    \end{equation*}
-    Test condition over entire state possible
-    \begin{equation*}
-            \cinferenceRule[testb|$\dibox{\htest{}}$]{test axiom}{
-                \linferenceRule[equiv]{
-                    \big(\bsfml\limply\asfml(s)\big)
-                }{
-                    \dbox{\htest{\bsfml}}{\asfml(s)}
-                }
-            }{}
-    \end{equation*}
+    \frametitle{Proof Calculus}
+    \begin{columns}[T]
+        \begin{column}[T]{0.6\textwidth}
+            \begin{itemize}
+                \item Assignment only changes present value, not past!
+                \begin{equation*}
+                    \cinferenceRule[assignb|$\dibox{\assign}$]{assignment/substitution axiom}{
+                            \linferenceRule[equiv]{
+                                \asfml(s,\astrm)
+                            }{
+                                \dbox{\hupdate{\humod{x}{\astrm}}}{\asfml(s,\x[0])}
+                            }
+                        }{}
+                \end{equation*}
+                \item Test condition over entire state possible: $\bsfml\equiv\hs{\tilde{\bsfml}(s)}$
+                \begin{equation*}
+                        \cinferenceRule[testb|$\dibox{\htest{}}$]{test axiom}{
+                            \linferenceRule[equiv]{
+                                \big(\bsfml\limply\asfml(s)\big)
+                            }{
+                                \dbox{\htest{\bsfml}}{\asfml(s)}
+                            }
+                        }{}
+                \end{equation*}
+            \end{itemize}
+        \end{column}
+        \begin{column}[T]{0.4\textwidth}
+            \begin{tikzpicture}[line width=0.5pt, xscale=(\textwidth-20pt)/1.4cm, yscale=0.6\textheight/3.7cm, >=Latex]
+
+                \newcommand{\polythree}{\ca+\cb*((\x-\ta)/(\tb-\ta))+\cc*((\x-\ta)/(\tb-\ta))^2+\cd*((\x-\ta)/(\tb-\ta))^3}
+                
+                % frame
+                \draw[->] (-1.1,-1.5) -- (-1.1,1.8) node[above] {$\x[s]$};
+                \draw[->] (-1.1,-1.5) -- (0.2,-1.5) node[right] {$s$};
+
+                \draw (-1,-1.5) node {$[$};
+                \draw (0,-1.5) node {$)$};
+                \draw (-1,-1.65) node[below] {$-T$};
+                \draw (0,-1.65) node[below] {$0$};
+
+                \draw[leftp] (0,0.1) -- (0,0.1);
+
+                
+                \newcommand{\ta}{-1}
+                \newcommand{\tb}{0}
+                \newcommand{\ca}{-0.2}
+                \newcommand{\cb}{-1.125}
+                \newcommand{\cc}{4.35}
+                \newcommand{\cd}{-2.125}
+                \draw[curve,cadlag] plot[samples=50, smooth, domain=\ta:\tb] (\x, {\polythree});
+
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+    
+    
+    
 \end{frame}
 
 \begin{frame}
-    \frametitle{Axiomatization}
+    \frametitle{Proof Calculus}
     \begin{calculus}
         \cinferenceRule[Dconst|$c'$]{derive constant}{
             \linferenceRule[eq]{0}{\der{a}}
@@ -678,7 +977,11 @@
 
 \begin{frame}
     \frametitle{Delay Differential Induction}
-    derived \emph{delay differential induction} axiom
+    \begin{itemize}
+        \item derived \emph{delay differential induction} axiom
+        \item for s-quantified safety condition
+    \end{itemize}
+    
     \footnotesize
     \begin{equation*}
         \cinferenceRule[DDI|DDI]{delay differential induction}{
@@ -804,11 +1107,11 @@
 \begin{frame}
     \frametitle{Outlook}
     \begin{itemize}
-        \item<1-> Examples!
-        \item<2-> How to find differntial invariants?
+        \item<1-> Example proofs!
+        \item<2-> How to find differential invariants?
         \item<3-> implementation in \KeYmaeraX
         \item<4-> complete reduction to \dL via \irref{stepsb}-axiom
-        \item<5-> More general DDEs...
+        \item<5-> more general DDEs...
     \end{itemize}
 \end{frame}
 
